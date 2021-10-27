@@ -1,4 +1,5 @@
 - name: Run multi-lined shell commands
+    hosts: all
     win_shell: |
         $text = Get-Content C:\Temp\test.txt
         $text += ' General Kenobi....you are a bold one'
