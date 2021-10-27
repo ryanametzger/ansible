@@ -2,11 +2,11 @@
   hosts: all
   tasks:
   name: Windows Powershell 
-      ansible.windows.win_powershell:
-      script: |
-         if (Get-Service -Name test -ErrorAction SilentlyContinue) {
-            Remove-Service -Name test
-         }
-         else {
-            $Ansible.Changed = $false
-         }
+  ansible.windows.win_powershell:
+    script: |
+       if (Get-Service -Name test -ErrorAction SilentlyContinue) {
+          Remove-Service -Name test
+       }
+       else {
+          $Ansible.Changed = $false
+       }
