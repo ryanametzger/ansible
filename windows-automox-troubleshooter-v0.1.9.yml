@@ -3,7 +3,7 @@
   ansible.windows.win_powershell:
     script: |
       param (
-	[Parameter(Mandatory=$False)][String]$AutoCheck  
+[Parameter(Mandatory=$False)][String]$AutoCheck  
  )
 
 #************************************************************************************************************
