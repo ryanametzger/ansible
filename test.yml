@@ -6,3 +6,7 @@
     win_shell: |
       write-output "This is my hell"
     register: result
+
+  - name: Process win_shell output
+  set_fact:
+    vms: "{{ result.stdout | regex_findall('(?<=VM: )(.*)') }}"
