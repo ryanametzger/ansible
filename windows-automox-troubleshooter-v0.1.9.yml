@@ -2,10 +2,7 @@
 - hosts: all
   ansible.windows.win_powershell:
     script: |
-    param (
-    [Parameter(Mandatory=$False)][String]$AutoCheck
- )
-
+    param ([Parameter(Mandatory=$False)][String]$AutoCheck)
 # ************************************************************************************************************
 # Functions
 function Test-PortConnection {
