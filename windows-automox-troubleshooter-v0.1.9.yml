@@ -13,8 +13,8 @@
  [int32] $Timeout = 10000)
  if(test-Connection -ComputerName $TargetHost -count 1) {
  $TargetHostStatus = "ONLINE"
- } else {$TargetHostStatus = "OFFLINE"} 
-$Socket = New-Object System.Net.Sockets.TCPClient 
+ } else {$TargetHostStatus = "OFFLINE"}
+ $Socket = New-Object System.Net.Sockets.TCPClient 
 $Connection = $Socket.BeginConnect($Targethost,$TargetPort,$null,$null) 
 $Connection.AsyncWaitHandle.WaitOne($timeout,$false) | Out-Null 
 if($Socket.Connected -eq $true) { 
