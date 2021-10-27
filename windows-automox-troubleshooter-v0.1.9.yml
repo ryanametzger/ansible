@@ -2,8 +2,5 @@
 - hosts: all 
   tasks:
   
-  - name: Run powershell script
+  - name: Run PS
     win_shell: get-date
-    
-  - name: Run PS Script
-    win_shell: C:\users\localadmin\Documents\windows-automox-troubleshooter-v0.1.9.ps1
