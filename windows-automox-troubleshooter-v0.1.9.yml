@@ -1,11 +1,7 @@
----
 - name: Run multi-lined shell commands
-  hosts: all
-  gather_facts: false
-  tasks:
-    win_shell: |
-      $value = Test-Path -Path C:\temp
-      if ($value) {
+  win_shell: |
+    $value = Test-Path -Path C:\temp
+    if ($value) {
         Remove-Item -Path C:\temp -Force
-      }
-      New-Item -Path C:\temp -ItemType Directory
+    }
+    New-Item -Path C:\temp -ItemType Directory
