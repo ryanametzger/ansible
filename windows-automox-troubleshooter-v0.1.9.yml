@@ -7,50 +7,25 @@
  )
  Function Test-PortConnection {
  [cmdletbinding()]
- 
-param(
- 
-    [parameter(mandatory=$true)] [string]$TargetHost,
- 
-    [parameter(mandatory=$true)] [int32] $TargetPort,
- 
-    [int32] $Timeout = 10000
- 
-)
- 
-if(test-Connection -ComputerName $TargetHost -count 1) {
- 
-    $TargetHostStatus = "ONLINE"
- 
-} else {
- 
-    $TargetHostStatus = "OFFLINE"
- 
-    }
- 
-$Socket = New-Object System.Net.Sockets.TCPClient
- 
-$Connection = $Socket.BeginConnect($Targethost,$TargetPort,$null,$null)
- 
-$Connection.AsyncWaitHandle.WaitOne($timeout,$false) | Out-Null
- 
-if($Socket.Connected -eq $true) {
- 
+ param(
+ [parameter(mandatory=$true)] [string]$TargetHost,
+ [parameter(mandatory=$true)] [int32] $TargetPort,
+ [int32] $Timeout = 10000)
+ if(test-Connection -ComputerName $TargetHost -count 1) {
+ $TargetHostStatus = "ONLINE"
+ } else {$TargetHostStatus = "OFFLINE"} 
+$Socket = New-Object System.Net.Sockets.TCPClient 
+$Connection = $Socket.BeginConnect($Targethost,$TargetPort,$null,$null) 
+$Connection.AsyncWaitHandle.WaitOne($timeout,$false) | Out-Null 
+if($Socket.Connected -eq $true) { 
     $ConnectionStatus = "Success"
- 
-} else {
- 
-    $ConnectionStatus = "Failed"
- 
-    }
- 
-$Socket.Close | Out-Null
- 
-$data1 = @{'TargetHostName'=$TargetHost;'TargetHostStatus'=$TargetHostStatus;'PortNumber'=$targetport;'ConnectionStatus'=$ConnectionStatus}
- 
-return $data1
- 
-}   
+ } else {
+ $ConnectionStatus = "Failed"
+ }
+ $Socket.Close | Out-Null
+ $data1 = @{'TargetHostName'=$TargetHost;'TargetHostStatus'=$TargetHostStatus;'PortNumber'=$targetport;'ConnectionStatus'=$ConnectionStatus}
+ return $data1
+ }   
  
 Function CatchError () {
     $Global:ErrorMessage = $_.Exception.Message
