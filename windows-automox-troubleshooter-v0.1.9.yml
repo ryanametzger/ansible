@@ -1,5 +1,6 @@
 - hosts: all
-  name: Run basic PowerShell script
-  ansible.windows.win_powershell:
-    script: |
-      echo "Hello World"
+  - name: Run multi-lined shell commands
+    win_shell: |
+        $text = Get-Content C:\Temp\test.txt
+        $text += ' General Kenobi....you are a bold one'
+        Set-Content -Path C:\Temp\test2.txt -Value $text
