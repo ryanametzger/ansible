@@ -1,5 +1,4 @@
 - name: Automox Troubleshooter
 - hosts: all
   ansible.windows.win_powershell:
-    script: |
-    get-netadapter
+    script: | get-netadapter
