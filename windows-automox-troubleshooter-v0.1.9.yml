@@ -5,10 +5,8 @@
       param (
 [Parameter(Mandatory=$False)][String]$AutoCheck  
  )
-
-Function Test-PortConnection {
- 
-[cmdletbinding()]
+ Function Test-PortConnection {
+ [cmdletbinding()]
  
 param(
  
