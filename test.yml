@@ -9,4 +9,4 @@
 
   - name: Process win_shell output
     set_fact:
-      vms: "{{ result.stdout | regex_findall('(?<=VM: )(.*)') }}"
+      vms: result.stdout
