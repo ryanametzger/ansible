@@ -3,5 +3,4 @@
   tasks:
   
   - name: Run powershell script
-    win_shell: |
-        Write-Output "My hell"
+    win_shell: get-date
