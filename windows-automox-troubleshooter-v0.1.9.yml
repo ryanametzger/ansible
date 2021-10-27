@@ -1,4 +1,4 @@
-name: Automox Troubleshooter
+- name: Automox Troubleshooter
   hosts: all
   tasks:
   - name: Windows Powershell 
