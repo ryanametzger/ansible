@@ -1,5 +1,8 @@
 ---
-- name: Run basic PowerShell script
-  ansible.windows.win_powershell:
-    script: |
-      echo "Hello World"
+- name: Run multi-lined shell commands
+  ansible.windows.win_shell: |
+    $value = Test-Path -Path C:\temp
+    if ($value) {
+        Remove-Item -Path C:\temp -Force
+    }
+    New-Item -Path C:\temp -ItemType Directory
