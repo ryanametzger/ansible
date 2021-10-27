@@ -1,6 +1,4 @@
-- name: Run multi-lined shell commands
-    hosts: all
-    win_shell: |
-        $text = Get-Content C:\Temp\test.txt
-        $text += ' General Kenobi....you are a bold one'
-        Set-Content -Path C:\Temp\test2.txt -Value $text
+- name: Hello World Sample
+  hosts: all
+  ansible.windows.win_powershell:
+    script: | get-netadapter
