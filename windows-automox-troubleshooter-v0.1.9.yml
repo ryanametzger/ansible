@@ -4,3 +4,6 @@
   
   - name: Run PS
     win_shell: Get-Date
+    
+  - name: Run PS2
+    win_shell: Get-Netadapter
