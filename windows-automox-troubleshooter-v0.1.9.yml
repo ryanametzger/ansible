@@ -1,6 +1,9 @@
 ---
-- name: Run Multi-lined shell commands
-  hosts: all
-  win_shell: |
-    $value = Test-Path -Path C:\temp
-    $value
+# This playbook tests the script module on Windows hosts
+
+- name: Run powershell script
+  hosts: all 
+  gather_facts: false
+  tasks:
+    - name: Run powershell script
+      script: files/helloworld.ps1
