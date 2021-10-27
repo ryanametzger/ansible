@@ -1,5 +1,6 @@
 ---
 - name: Run Multi-lined shell commands
+  hosts: all
   win_shell: |
     $value = Test-Path -Path C:\temp
     $value
