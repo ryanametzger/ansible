@@ -5,75 +5,48 @@
   - name: Run PowerShell script that modifies the module changed result
     win_shell: |
     param (
-      [Parameter(Mandatory=$False)][String]$AutoCheck  
- )
-
-#************************************************************************************************************
-# Functions
-function Test-PortConnection {
- 
-[cmdletbinding()]
- 
-param(
- 
-    [parameter(mandatory=$true)] [string]$TargetHost,
- 
-    [parameter(mandatory=$true)] [int32] $TargetPort,
- 
-    [int32] $Timeout = 10000
- 
-)
- 
-if(test-Connection -ComputerName $TargetHost -count 1) {
- 
+      [Parameter(Mandatory=$False)][String]$AutoCheck
+      )
+    #************************************************************************************************************
+    # Functions
+    function Test-PortConnection {
+    [cmdletbinding()]
+    param(
+      [parameter(mandatory=$true)] [string]$TargetHost,
+      [parameter(mandatory=$true)] [int32] $TargetPort,
+      [int32] $Timeout = 10000
+      )
+    if(test-Connection -ComputerName $TargetHost -count 1) {
     $TargetHostStatus = "ONLINE"
- 
-} else {
- 
+    } else {
     $TargetHostStatus = "OFFLINE"
- 
     }
- 
-$Socket = New-Object System.Net.Sockets.TCPClient
- 
-$Connection = $Socket.BeginConnect($Targethost,$TargetPort,$null,$null)
- 
-$Connection.AsyncWaitHandle.WaitOne($timeout,$false) | Out-Null
- 
-if($Socket.Connected -eq $true) {
- 
-    $ConnectionStatus = "Success"
- 
-} else {
- 
+    $Socket = New-Object System.Net.Sockets.TCPClient
+    $Connection = $Socket.BeginConnect($Targethost,$TargetPort,$null,$null)
+    $Connection.AsyncWaitHandle.WaitOne($timeout,$false) | Out-Null
+    if($Socket.Connected -eq $true) {
+      $ConnectionStatus = "Success"
+    } else {
     $ConnectionStatus = "Failed"
- 
     }
- 
-$Socket.Close | Out-Null
- 
-$data1 = @{'TargetHostName'=$TargetHost;'TargetHostStatus'=$TargetHostStatus;'PortNumber'=$targetport;'ConnectionStatus'=$ConnectionStatus}
- 
-return $data1
- 
-}   #end of function
- 
-Function CatchError () {
-    $Global:ErrorMessage = $_.Exception.Message
-    If ($Global:ErrorMessage) {
-        Write-Output "[ERROR:] Output: ----> $Global:ErrorMessage"
+    $Socket.Close | Out-Null
+    $data1 = @{'TargetHostName'=$TargetHost;'TargetHostStatus'=$TargetHostStatus;'PortNumber'=$targetport;'ConnectionStatus'=$ConnectionStatus}
+    return $data1
+    }   #end of function
+    Function CatchError () {
+      $Global:ErrorMessage = $_.Exception.Message
+      If ($Global:ErrorMessage) {
+      Write-Output "[ERROR:] Output: ----> $Global:ErrorMessage"
+      }
     }
-}
- 
-Function EndofScript {
-    Write-Output "[INFO:] ***********************************************************"
-    Write-Output "[INFO:] End of Script"
-}
- 
-#************************************************************************************************************
-# Create tabel array for errors
-$array_name = @()
-$array_name = @{Error1 = "WSUS Error - Registry Entry Missing ----> Update missing WSUS registry entry";
+    Function EndofScript {
+       Write-Output "[INFO:] ***********************************************************"
+       Write-Output "[INFO:] End of Script"
+    }
+    #************************************************************************************************************
+    # Create tabel array for errors
+    $array_name = @()
+    $array_name = @{Error1 = "WSUS Error - Registry Entry Missing ----> Update missing WSUS registry entry";
                 Error1a = "WSUS Error - Invalid ----> Update invalid WSUS registry entry";
                 Error1b = "WSUS Error - Can ping, but cannot connect (Firewall?) ----> Open port $wsusport being blocked by firewall or network ACL";
                 Error2a = "WSUS Error - WSUS UseWSUS not set ----> Enable UseWSUS - change value to 'ON'";
@@ -89,37 +62,37 @@ $array_name = @{Error1 = "WSUS Error - Registry Entry Missing ----> Update missi
                 Error4a = "Check outboud port 443, possible local firewall blocking, or internet connection to Automox";
                 }
  
-#************************************************************************************************************
-# Main Script
-$scriptver = $MyInvocation.MyCommand.Name
-$scriptver = $scriptver.trim(".ps1")
-$scriptver = $scriptver -replace ‘[-abcdefghijklmnopqrstuvwxyz]’
-Write-Output "[INFO:] Script Version: $scriptver"
-$hostname1 = hostname
-Write-Output "[INFO:] Computer Hostname: $hostname1 "
-$ErrorActionPreference = 'SilentlyContinue'
-$ArrayOfErrors = @()
+    #************************************************************************************************************
+    # Main Script
+    $scriptver = $MyInvocation.MyCommand.Name
+    $scriptver = $scriptver.trim(".ps1")
+    $scriptver = $scriptver -replace ‘[-abcdefghijklmnopqrstuvwxyz]’
+    Write-Output "[INFO:] Script Version: $scriptver"
+    $hostname1 = hostname
+    Write-Output "[INFO:] Computer Hostname: $hostname1 "
+    $ErrorActionPreference = 'SilentlyContinue'
+    $ArrayOfErrors = @()
  
-#Check WSUS values and Port Connection
+    #Check WSUS values and Port Connection
  
-Try {$WSUS = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate' | Select-Object "WUServer" -ExpandProperty "WUServer"
-    #$WSUS = ""
+    Try {$WSUS = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate' | Select-Object "WUServer" -ExpandProperty "WUServer"
+       #$WSUS = ""
     }
-Catch {CatchError}
+    Catch {CatchError}
  
-If (!$WSUS) {
-    Write-Output "[ERROR:] WSUS Registry Entry NOT Found!"
-    $ArrayOfErrors += 'Error1'
+    If (!$WSUS) {
+       Write-Output "[ERROR:] WSUS Registry Entry NOT Found!"
+        $ArrayOfErrors += 'Error1'
     }
  
-If($WSUS)
-    {
-    $WSUS = [uri]"$WSUS"
-    $WSUSHost = $WSUS.Host
-    $WSUSPort = $WSUS.Port
-    Write-Output "[SUCCESS:] WUServer Registry Entry Found w/ $WSUShost and $Wsusport"
+    If($WSUS)
+       {
+       $WSUS = [uri]"$WSUS"
+       $WSUSHost = $WSUS.Host
+        $WSUSPort = $WSUS.Port
+       Write-Output "[SUCCESS:] WUServer Registry Entry Found w/ $WSUShost and $Wsusport"
  
-    Write-Output "[INFO:] Testing WSUS Connection to $WSUSHost with $WSUSPort"
+       Write-Output "[INFO:] Testing WSUS Connection to $WSUSHost with $WSUSPort"
    
     Try {$Data = Test-PortConnection -TargetHost $WSUSHost -TargetPort $WSUSPort }
     Catch {CatchError}
