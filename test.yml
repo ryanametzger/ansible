@@ -7,6 +7,4 @@
       write-output "This is my hell"
     register: result
 
-  - name: Process win_shell output
-    set_fact:
-      vms: "{{ result.stdout | from_json }}"
+  - debug: var=result.stdout_lines
