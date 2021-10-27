@@ -4,19 +4,19 @@
     script: |
     param ([Parameter(Mandatory=$False)][String]$AutoCheck)
 
-function Test-PortConnection {
+    function Test-PortConnection {
 
-[cmdletbinding()]
+    [cmdletbinding()]
 
-param(
+    param(
 
-    [parameter(mandatory=$true)] [string]$TargetHost,
+         [parameter(mandatory=$true)] [string]$TargetHost,
 
-    [parameter(mandatory=$true)] [int32] $TargetPort,
+         [parameter(mandatory=$true)] [int32] $TargetPort,
 
-    [int32] $Timeout = 10000
+         [int32] $Timeout = 10000
 
-)
+     )
 
 if(test-Connection -ComputerName $TargetHost -count 1) {
 
