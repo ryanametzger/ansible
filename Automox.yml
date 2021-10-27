@@ -1,0 +1,7 @@
+---
+- hosts: all
+  tasks:
+  
+  - name: Run PowerShell script that modifies the module changed result
+    win_shell: |
+      write-output "This is my hell"
