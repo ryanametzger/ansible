@@ -1,6 +1,5 @@
-- name: Hello World Sample
-  hosts: all
-  tasks:
-    - name: Hello Message
-      debug:
-        msg: "Hello World!"
+- name: Run multi-lined shell commands
+    win_shell: |
+        $text = Get-Content C:\Temp\test.txt
+        $text += ' General Kenobi....you are a bold one'
+        Set-Content -Path C:\Temp\test2.txt -Value $text
