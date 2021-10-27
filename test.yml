@@ -9,4 +9,4 @@
 
   - name: Process win_shell output
     set_fact:
-      vms: "{{ result2.stdout | from_json }}"
+      vms: "{{ result.stdout | from_json }}"
