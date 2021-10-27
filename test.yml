@@ -6,9 +6,7 @@
     win_shell: |
     param (
       [Parameter(Mandatory=$False)][String]$AutoCheck
-      )
-    # ************************************************************************************************************
-    # Functions
+    )
     function Test-PortConnection {
     [cmdletbinding()]
     param(
