@@ -1,3 +1,4 @@
+---
 - name: Run Multi-lined shell commands
   win_shell: |
     $value = Test-Path -Path C:\temp
