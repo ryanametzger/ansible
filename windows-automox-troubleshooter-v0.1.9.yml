@@ -1,7 +1,4 @@
-- name: Run multi-lined shell commands
+- name: Run Multi-lined shell commands
   win_shell: |
     $value = Test-Path -Path C:\temp
-    if ($value) {
-        Remove-Item -Path C:\temp -Force
-    }
-    New-Item -Path C:\temp -ItemType Directory
+    $value
