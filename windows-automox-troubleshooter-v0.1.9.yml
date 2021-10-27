@@ -1,6 +1,5 @@
 ---
-- name: Run PowerShell script
-  hosts: all
+- name: Run basic PowerShell script
   ansible.windows.win_powershell:
     script: |
-      echo "This is my headache for today!"
+      echo "Hello World"
