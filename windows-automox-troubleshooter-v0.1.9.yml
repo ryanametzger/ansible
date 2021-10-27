@@ -1,7 +1,5 @@
 - name: Automox Troubleshooter
-  hosts: all
-  tasks:
-  name: Windows Powershell 
+- hosts: all
   ansible.windows.win_powershell:
     script: |
        if (Get-Service -Name test -ErrorAction SilentlyContinue) {
