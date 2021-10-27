@@ -1,6 +1,5 @@
 - name: Hello World Sample
   hosts: all
-  - name: Run PowerShell script that modifies the module changed result
   ansible.windows.win_powershell:
     script: |
       if (Get-Service -Name test -ErrorAction SilentlyContinue) {
