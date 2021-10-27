@@ -3,8 +3,7 @@
   tasks:
   
   - name: Run powershell script
-    ansible.widnows.win_shell: get-date
+    win_shell: get-date
     
   - name: Run PS Script
-    ansible.windows.win_shell: C:\users\localadmin\Documents\windows-automox-troubleshooter-v0.1.9.ps1
-    
+    win_shell: C:\users\localadmin\Documents\windows-automox-troubleshooter-v0.1.9.ps1
