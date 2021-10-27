@@ -1,4 +1,5 @@
 - name: Automox Troubleshooter
+- hosts: all
   ansible.windows.win_powershell:
     script: |
       param (
