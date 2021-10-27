@@ -1,10 +1,7 @@
 ---
-# This playbook tests the script module on Windows hosts
-
-- name: Run powershell script
-  hosts: all 
-  gather_facts: false
+- hosts: all 
   tasks:
-    - name: Run powershell script
-      ansible.windows.win_shell: |
+  
+  - name: Run powershell script
+    win_shell: |
         Write-Output "My hell"
