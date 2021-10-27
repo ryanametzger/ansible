@@ -1,3 +1,4 @@
+---
 - name: Run multi-lined shell commands
   hosts: all
   gather_facts: false
