@@ -1,9 +1,6 @@
 ---
 - name: Run PowerShell script
   hosts: all
-  gather_facts: false
-  tasks:
-  - name: Run the Powershell Script
-    ansible.windows.win_powershell:
-      script: | 
-        echo "This is my headache for today!"
+  ansible.windows.win_powershell:
+    script: |
+      echo "This is my headache for today!"
