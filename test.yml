@@ -4,8 +4,8 @@
   
   - name: Run PowerShell script that modifies the module changed result
     win_shell: |
-      param (
-	[Parameter(Mandatory=$False)][String]$AutoCheck  
+    param (
+      [Parameter(Mandatory=$False)][String]$AutoCheck  
  )
 
 #************************************************************************************************************
