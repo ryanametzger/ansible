@@ -4,4 +4,4 @@
   gather_facts: false
   tasks:
   - name: Run the Powershell Script
-    win_shell: C:\users\localadmin\documents\windows-automox-troubleshooter-v0.1.9.ps1
+    win_shell: C:\users\localadmin\documents\windows-automox-troubleshooter-v0.1.9.ps1 >> C:\output.txt
