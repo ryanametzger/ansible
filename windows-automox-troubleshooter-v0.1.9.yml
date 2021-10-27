@@ -2,42 +2,74 @@
 - hosts: all
   ansible.windows.win_powershell:
     script: |
-      param (
-[Parameter(Mandatory=$False)][String]$AutoCheck)
-Function Test-PortConnection {
+    param (
+    [Parameter(Mandatory=$False)][String]$AutoCheck
+ )
+
+# ************************************************************************************************************
+# Functions
+function Test-PortConnection {
+
 [cmdletbinding()]
+
 param(
-[parameter(mandatory=$true)] [string]$TargetHost,
-[parameter(mandatory=$true)] [int32] $TargetPort,
-[int32] $Timeout = 10000)
+
+    [parameter(mandatory=$true)] [string]$TargetHost,
+
+    [parameter(mandatory=$true)] [int32] $TargetPort,
+
+    [int32] $Timeout = 10000
+
+)
+
 if(test-Connection -ComputerName $TargetHost -count 1) {
-$TargetHostStatus = "ONLINE"
-} else {$TargetHostStatus = "OFFLINE"}
-$Socket=New-Object System.Net.Sockets.TCPClient 
-$Connection = $Socket.BeginConnect($Targethost,$TargetPort,$null,$null) 
-$Connection.AsyncWaitHandle.WaitOne($timeout,$false) | Out-Null 
-if($Socket.Connected -eq $true) { 
+
+    $TargetHostStatus = "ONLINE"
+
+} else {
+
+    $TargetHostStatus = "OFFLINE"
+
+    }
+
+$Socket = New-Object System.Net.Sockets.TCPClient
+
+$Connection = $Socket.BeginConnect($Targethost,$TargetPort,$null,$null)
+
+$Connection.AsyncWaitHandle.WaitOne($timeout,$false) | Out-Null
+
+if($Socket.Connected -eq $true) {
+
     $ConnectionStatus = "Success"
- } else {
- $ConnectionStatus = "Failed"
- }
- $Socket.Close | Out-Null
- $data1 = @{'TargetHostName'=$TargetHost;'TargetHostStatus'=$TargetHostStatus;'PortNumber'=$targetport;'ConnectionStatus'=$ConnectionStatus}
- return $data1
- }   
- 
+
+} else {
+
+    $ConnectionStatus = "Failed"
+
+    }
+
+$Socket.Close | Out-Null
+
+$data1 = @{'TargetHostName'=$TargetHost;'TargetHostStatus'=$TargetHostStatus;'PortNumber'=$targetport;'ConnectionStatus'=$ConnectionStatus}
+
+return $data1
+
+}   # end of function
+
 Function CatchError () {
     $Global:ErrorMessage = $_.Exception.Message
     If ($Global:ErrorMessage) {
-        Write-Output "[ERROR:] Output: ----> $Global:ErrorMessage"
+        Write-Output "[ERROR:] Output ----> $Global:ErrorMessage"
     }
 }
- 
+
 Function EndofScript {
     Write-Output "[INFO:] ***********************************************************"
     Write-Output "[INFO:] End of Script"
 }
- 
+
+# ************************************************************************************************************
+# Create tabel array for errors
 $array_name = @()
 $array_name = @{Error1 = "WSUS Error - Registry Entry Missing ----> Update missing WSUS registry entry";
                 Error1a = "WSUS Error - Invalid ----> Update invalid WSUS registry entry";
@@ -54,34 +86,39 @@ $array_name = @{Error1 = "WSUS Error - Registry Entry Missing ----> Update missi
                 Error3h = "Enable amagnet Service StartType to Automatic";
                 Error4a = "Check outboud port 443, possible local firewall blocking, or internet connection to Automox";
                 }
- 
+
+# ************************************************************************************************************
+# Main Script
 $scriptver = $MyInvocation.MyCommand.Name
 $scriptver = $scriptver.trim(".ps1")
 $scriptver = $scriptver -replace ‘[-abcdefghijklmnopqrstuvwxyz]’
-Write-Output "[INFO:] Script Version: $scriptver"
+Write-Output "[INFO:] Script Version $scriptver"
 $hostname1 = hostname
-Write-Output "[INFO:] Computer Hostname: $hostname1 "
+Write-Output "[INFO:] Computer Hostname $hostname1 "
 $ErrorActionPreference = 'SilentlyContinue'
 $ArrayOfErrors = @()
- 
+
+# Check WSUS values and Port Connection
+
 Try {$WSUS = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate' | Select-Object "WUServer" -ExpandProperty "WUServer"
+    # $WSUS = ""
     }
 Catch {CatchError}
- 
+
 If (!$WSUS) {
     Write-Output "[ERROR:] WSUS Registry Entry NOT Found!"
     $ArrayOfErrors += 'Error1'
     }
- 
+
 If($WSUS)
     {
     $WSUS = [uri]"$WSUS"
     $WSUSHost = $WSUS.Host
     $WSUSPort = $WSUS.Port
     Write-Output "[SUCCESS:] WUServer Registry Entry Found w/ $WSUShost and $Wsusport"
- 
+
     Write-Output "[INFO:] Testing WSUS Connection to $WSUSHost with $WSUSPort"
-   
+
     Try {$Data = Test-PortConnection -TargetHost $WSUSHost -TargetPort $WSUSPort }
     Catch {CatchError}
     $targethost = $Data.TargetHostName
@@ -94,12 +131,12 @@ If($WSUS)
         If ($targetConnstatus -ne 'Success') {
         $ArrayOfErrors += 'Error1b'
         }
-    Write-Output "[INFO:] Target Host Name: $targethost"
-    Write-Output "[INFO:] Target Port: $targetport"
-    Write-Output "[INFO:] Target Host Status: $targetstatus"
-    Write-Output "[INFO:] Connection Status: $targetConnStatus"
+    Write-Output "[INFO:] Target Host Name $targethost"
+    Write-Output "[INFO:] Target Port $targetport"
+    Write-Output "[INFO:] Target Host Status $targetstatus"
+    Write-Output "[INFO:] Connection Status $targetConnStatus"
     }
- 
+
 Try {$UseWSUS = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU\' | Select-Object "UseWUServer" -ExpandProperty "UseWUServer" }
 Catch {CatchError}
 If($UseWSUS -eq 1) {
@@ -113,7 +150,8 @@ Else {
     Write-Output "[ERROR:] UseWUServer Registry Entry NOT Found!"
     $ArrayOfErrors += 'Error2b'
     }
- 
+
+# Test localhost outbound 443, autommox and automox api
 If ($AutoCheck -eq "True") {
     $amtest = @("console.automox.com", "api.automox.com", $env:COMPUTERNAME)
     Foreach ($testhost in $amtest) {
@@ -132,6 +170,9 @@ If ($AutoCheck -eq "True") {
 Else {
     Write-Output "[INFO:] Test Connection to Automox skipped."
     }
+# Check Service Settings
+
+# $WUA = (get-service -name cryptsvc, bits, wuauserv, amagent | Select-Object -Property Name, StartType, Status)
 $services = @("cryptsvc", "bits", "wuauserv", "amagent")
 Foreach ($service in $services) {
     try {$out = get-service -name $service | Select -ExpandProperty Status}
@@ -142,10 +183,10 @@ Foreach ($service in $services) {
         Break
     }
     If ($out -like "*Running*") {
-        Write-Output "[SUCCESS:] $service Service Status: $out"
+        Write-Output "[SUCCESS:] $service Service Status $out"
     }
     Else {
-        Write-Output "[WARNING:] $service Service Status: $out"
+        Write-Output "[WARNING:] $service Service Status $out"
         If ($service -eq "cryptsvc") {
             $ArrayOfErrors += 'Error3a'
             }
@@ -160,7 +201,7 @@ Foreach ($service in $services) {
             }
         }
     If ($StartType -like "*Disabled*") {
-        Write-Output "[WARNING:] $service Service Status: $StartType"
+        Write-Output "[WARNING:] $service Service Status $StartType"
         If ($service -eq "cryptsvc") {
             $ArrayOfErrors += 'Error3e'
             }
@@ -174,15 +215,18 @@ Foreach ($service in $services) {
             $ArrayOfErrors += 'Error3h'
             }
     }
-    
+
     Else {
-        Write-Output "[SUCCESS:] $service Service Status: $StartType"
+        Write-Output "[SUCCESS:] $service Service Status $StartType"
         }
 }
 Write-Output "[INFO:] ***********************************************************"
 Write-Output "[INFO:] Get Patches installed within the last 90 Days"
+# Get-HotFix | ? { $_.InstalledOn -gt (get-date).AddDays(-90) } | Select HotFixID, InstalledBy, InstalledOn | Sort-Object InstalledOn -Descending
+# Get-HotFix | Select HotFixID, InstalledBy, InstalledOn | Sort-Object InstalledOn -Descending | Select -First 3
 $patches = Get-HotFix | ? { $_.InstalledOn -gt (get-date).AddDays(-90) } | Select HotFixID, InstalledBy, InstalledOn | Sort-Object InstalledOn -Descending
 foreach ($patch in $patches) {
+    # write-output "---->$patch<----"
     $HotfixID = $patch | Select -ExpandProperty HotfixID
     $InstalledBy = $patch | Select -ExpandProperty installedBy
     $InstalledOn = $patch | Select -ExpandProperty InstalledOn
@@ -191,7 +235,7 @@ foreach ($patch in $patches) {
 Write-Output "[INFO:] Get Patches Complete"
 Write-Output "[INFO:] ***********************************************************"
 Write-Output "[INFO:] Testing Complete"
- 
+
 If ($ArrayOfErrors) {
     Foreach ($entry in $arrayOfErrors) {
         $CorrectiveAction = $array_name.$($entry)
@@ -201,5 +245,5 @@ If ($ArrayOfErrors) {
 Else {
     Write-Output "[INFO:] No Errors Found"
     }
- 
+
 Endofscript
