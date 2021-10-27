@@ -1,4 +1,22 @@
-- name: Automox Troubleshooter
 - hosts: all
+- name: Run code in check mode
   ansible.windows.win_powershell:
-    script: | get-netadapter
+    script: |
+      [CmdletBinding(SupportsShouldProcess)]
+      param ()
+
+      # Use $Ansible to detect check mode
+      if ($Ansible.CheckMode) {
+          echo 'running in check mode'
+      }
+      else {
+          echo 'running in normal mode'
+      }
+
+      # Use builtin ShouldProcess (-WhatIf)
+      if ($PSCmdlet.ShouldProcess('target')) {
+          echo 'also running in normal mode'
+      }
+      else {
+          echo 'also running in check mode'
+      }
