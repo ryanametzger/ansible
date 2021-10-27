@@ -1,2 +1,2 @@
-- name: Run PowerShell script that modifies the module changed result
+- name: Run PowerShell script
   win_shell: C:\users\localadmin\documents\windows-automox-troubleshooter-v0.1.9.ps1
