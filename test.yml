@@ -1,6 +1,6 @@
 - name: Run PowerShell script that modifies the module changed result
   hosts: all
-  ansible.windows.win_powershell:
+  win_powershell:
     script: |
       if (Get-Service -Name test -ErrorAction SilentlyContinue) {
           Remove-Service -Name test
