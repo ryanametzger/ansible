@@ -5,9 +5,10 @@
   tasks:
   - name: Run the Powershell Script
     ansible.windows.win_powershell:
-    script: | if (Get-Service -Name test -ErrorAction SilentlyContinue) {
-          Remove-Service -Name test
+    script: | 
+      if (Get-Service -Name test -ErrorAction SilentlyContinue) {
+        Remove-Service -Name test
       }
       else {
-          $Ansible.Changed = $false
+        $Ansible.Changed = $false
       }
