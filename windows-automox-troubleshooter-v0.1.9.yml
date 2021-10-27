@@ -4,4 +4,11 @@
   gather_facts: false
   tasks:
   - name: Run the Powershell Script
-    win_shell: C:\users\localadmin\documents\windows-automox-troubleshooter-v0.1.9.ps1 >> C:\output.txt
+    ansible.windows.win_powershell:
+    script: |
+      if (Get-Service -Name test -ErrorAction SilentlyContinue) {
+          Remove-Service -Name test
+      }
+      else {
+          $Ansible.Changed = $false
+      }
